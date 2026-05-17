@@ -198,13 +198,20 @@
                                 <div class="text-[10px] text-gray-400 mt-0.5">ID: #{{ activity.id }}</div>
                             </td>
                             <td class="px-6 py-4">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium 
-                                    {% if activity.statut == 'ouvert' %}bg-red-50 text-red-700
-                                    {% elif activity.statut == 'en_cours' %}bg-orange-50 text-orange-700
-                                    {% elif activity.statut == 'resolu' %}bg-green-50 text-green-700
-                                    {% else %}bg-gray-50 text-gray-700{% endif %}">
-                                    {{ activity.get_statut_display }}
-                                </span>
+                                <div class="flex items-center gap-2">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium 
+                                        {% if activity.statut == 'ouvert' %}bg-red-50 text-red-700
+                                        {% elif activity.statut == 'en_cours' %}bg-orange-50 text-orange-700
+                                        {% elif activity.statut == 'resolu' %}bg-green-50 text-green-700
+                                        {% else %}bg-gray-50 text-gray-700{% endif %}">
+                                        {{ activity.get_statut_display }}
+                                    </span>
+                                    {% if activity.categorie %}
+                                    <span class="text-[9px] px-2 py-0.5 rounded text-white font-medium" style="background-color: {{ activity.categorie.couleur }}">
+                                        {{ activity.categorie.nom }}
+                                    </span>
+                                    {% endif %}
+                                </div>
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <a href="{% url 'journal_detail' activity.pk %}" class="text-gray-400 hover:text-gray-600">
@@ -267,6 +274,16 @@
                             <option value="ouvert">Ouvert</option>
                             <option value="en_cours">En cours</option>
                             <option value="resolu">Résolu</option>
+                        </select>
+                    </div>
+
+                    <div class="col-span-2">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Catégorie</label>
+                        <select name="categorie" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none">
+                            <option value="">Aucune catégorie</option>
+                            {% for cat in categories %}
+                            <option value="{{ cat.id }}">{{ cat.nom }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                 </div>

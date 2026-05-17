@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from .models import Journal, ActionLog
+from .models import Journal, ActionLog, Categorie
 
 class SignUpView(generic.CreateView):
     form_class = UserCreationForm
@@ -36,7 +36,7 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
         context = super().get_context_data(**kwargs)
         
         # On récupère les données globales pour la traçabilité complète
-        all_entries = Journal.objects.all()
+        all_entries = Journal.objects.select_related('categorie').all()
         
         # Statistiques basées sur l'état actuel des notes
         stats = all_entries.aggregate(
@@ -57,6 +57,7 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
         context['in_progress_entries'] = stats['in_progress']
         context['resolved_entries'] = stats['resolved']
         context['completion_rate'] = round(completion_rate)
+        context['categories'] = Categorie.objects.all()
 
         # Affiche les notes récemment modifiées (y compris créations)
         context['recent_activities'] = all_entries.order_by('-date_modification')[:6]
@@ -68,9 +69,25 @@ class JournalView(LoginRequiredMixin, generic.ListView):
     context_object_name = "journaux"
     paginate_by = 6
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Categorie.objects.all()
+        return context
+
+class CategorieView(LoginRequiredMixin, generic.CreateView):
+    model = Categorie
+    fields = ['nom', 'couleur']
+    template_name = "categorie.html"
+    success_url = reverse_lazy("categorie")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Categorie.objects.annotate(nb_activites=Count('journaux'))
+        return context
+
 class JournalCreateView(LoginRequiredMixin, generic.CreateView):
     model = Journal
-    fields = ['titre', 'contenu', 'image', 'priorite', 'statut']
+    fields = ['titre', 'contenu', 'image', 'priorite', 'statut', 'categorie']
     template_name = "liste_ent.html"
     success_url = reverse_lazy("journal")
 
@@ -81,6 +98,7 @@ class JournalCreateView(LoginRequiredMixin, generic.CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['journaux'] = Journal.objects.all()
+        context['categories'] = Categorie.objects.all()
         return context
 
 class JournalDetailView(LoginRequiredMixin, generic.DetailView):
@@ -90,9 +108,14 @@ class JournalDetailView(LoginRequiredMixin, generic.DetailView):
 
 class JournalUpdateView(LoginRequiredMixin, UserIsOwnerMixin, generic.UpdateView):
     model = Journal
-    fields = ['titre', 'contenu', 'image', 'priorite', 'statut']
+    fields = ['titre', 'contenu', 'image', 'priorite', 'statut', 'categorie']
     template_name = "update_ent.html"
     context_object_name = "journal"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Categorie.objects.all()
+        return context
 
     def get_success_url(self):
         return reverse_lazy('journal_detail', kwargs={'pk': self.object.pk})

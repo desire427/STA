@@ -4,6 +4,17 @@ from django.urls import reverse
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
+class Categorie(models.Model):
+    nom = models.CharField(max_length=100, verbose_name="Nom de la catégorie")
+    couleur = models.CharField(max_length=20, default="#1a237e", verbose_name="Couleur")
+
+    class Meta:
+        verbose_name = "Catégorie"
+        verbose_name_plural = "Catégories"
+
+    def __str__(self):
+        return self.nom
+
 class Journal(models.Model):
     PRIORITY_CHOICES = [
         ('basse', 'Basse'),
@@ -22,6 +33,7 @@ class Journal(models.Model):
     image = models.ImageField(upload_to='journaux/%Y/%m/%d/', blank=True, null=True, verbose_name="Image de preuve")
     priorite = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='normale')
     statut = models.CharField(max_length=15, choices=STATUT_CHOICES, default='ouvert')
+    categorie = models.ForeignKey(Categorie, on_delete=models.SET_NULL, null=True, blank=True, related_name='journaux', verbose_name="Catégorie")
     
     auteur = models.ForeignKey(User, on_delete=models.CASCADE, related_name='journaux')
     date_creation = models.DateTimeField(auto_now_add=True, verbose_name="Créé le")
