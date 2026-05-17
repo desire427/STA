@@ -1,10 +1,11 @@
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
+from django.db.models import Count, Q
 from django.urls import reverse_lazy
 from django.views import generic
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Journal
+from .models import Journal, ActionLog
 
 class SignUpView(generic.CreateView):
     form_class = UserCreationForm
@@ -19,8 +20,41 @@ class SignUpView(generic.CreateView):
 class UserLoginView(LoginView):
     template_name = "login.html"
 
+class ProfileView(LoginRequiredMixin, generic.TemplateView):
+    template_name = "profile.html"
+
 class DashboardView(LoginRequiredMixin, generic.TemplateView):
     template_name = "dashboard.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # On récupère les données globales pour la traçabilité complète
+        all_entries = Journal.objects.all()
+        
+        # Statistiques basées sur l'état actuel des notes
+        stats = all_entries.aggregate(
+            opened=Count('id', filter=Q(statut='ouvert')),
+            in_progress=Count('id', filter=Q(statut='en_cours')),
+            resolved=Count('id', filter=Q(statut='resolu'))
+        )
+        
+        total_actions = ActionLog.objects.count()
+        
+        completion_rate = 0
+        total_current = all_entries.count()
+        if total_current > 0:
+            completion_rate = (stats['resolved'] / total_current) * 100
+        
+        context['total_entries'] = total_actions  # Utilise le compte de l'historique
+        context['open_entries'] = stats['opened']
+        context['in_progress_entries'] = stats['in_progress']
+        context['resolved_entries'] = stats['resolved']
+        context['completion_rate'] = round(completion_rate)
+
+        # Affiche les notes récemment modifiées (y compris créations)
+        context['recent_activities'] = all_entries.order_by('-date_modification')[:6]
+        return context
 
 class JournalView(LoginRequiredMixin, generic.ListView):
     model = Journal
