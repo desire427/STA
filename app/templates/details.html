@@ -204,6 +204,7 @@
 
                 <!-- Card Footer -->
                 <div class="px-8 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                    {% if journal.auteur == user %}
                     <div class="flex items-center gap-3">
                         <a href="{% url 'journal_update' journal.pk %}" class="inline-flex items-center gap-2 px-4 py-2 bg-[#1a237e] hover:bg-[#0d1642] text-white text-sm font-medium rounded-lg transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -218,6 +219,9 @@
                             Supprimer la note
                         </button>
                     </div>
+                    {% else %}
+                    <div></div>
+                    {% endif %}
                     
                     <div class="flex items-center gap-2 text-xs text-gray-500">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">

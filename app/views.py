@@ -4,7 +4,7 @@ from django.db.models import Count, Q
 from django.urls import reverse_lazy
 from django.views import generic
 from django.contrib.auth.views import LoginView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Journal, ActionLog
 
 class SignUpView(generic.CreateView):
@@ -19,6 +19,12 @@ class SignUpView(generic.CreateView):
 
 class UserLoginView(LoginView):
     template_name = "login.html"
+
+class UserIsOwnerMixin(UserPassesTestMixin):
+    """Mixin pour vérifier que l'utilisateur est l'auteur de l'objet."""
+    def test_func(self):
+        journal = self.get_object()
+        return journal.auteur == self.request.user
 
 class ProfileView(LoginRequiredMixin, generic.TemplateView):
     template_name = "profile.html"
@@ -81,7 +87,7 @@ class JournalDetailView(LoginRequiredMixin, generic.DetailView):
     template_name = "details.html"
     context_object_name = "journal"
 
-class JournalUpdateView(LoginRequiredMixin, generic.UpdateView):
+class JournalUpdateView(LoginRequiredMixin, UserIsOwnerMixin, generic.UpdateView):
     model = Journal
     fields = ['titre', 'contenu', 'image', 'priorite', 'statut']
     template_name = "update_ent.html"
@@ -89,3 +95,8 @@ class JournalUpdateView(LoginRequiredMixin, generic.UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('journal_detail', kwargs={'pk': self.object.pk})
+
+class JournalDeleteView(LoginRequiredMixin, UserIsOwnerMixin, generic.DeleteView):
+    model = Journal
+    template_name = "journal_confirm_delete.html"
+    success_url = reverse_lazy("journal")
