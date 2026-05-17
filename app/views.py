@@ -66,6 +66,7 @@ class JournalView(LoginRequiredMixin, generic.ListView):
     model = Journal
     template_name = "liste_ent.html"
     context_object_name = "journaux"
+    paginate_by = 6
 
 class JournalCreateView(LoginRequiredMixin, generic.CreateView):
     model = Journal
