@@ -1,7 +1,9 @@
 from django.urls import path
 from .views import SignUpView, UserLoginView, DashboardView, ProfileView
 from django.contrib.auth.views import LogoutView
-from .views import JournalView, JournalCreateView, JournalDetailView, JournalUpdateView, JournalDeleteView, CategorieView
+from .views import JournalView, JournalCreateView, JournalDetailView, JournalUpdateView, JournalDeleteView, CategorieView, ActionLogListView
+
+
 
 urlpatterns = [
     path("signup/", SignUpView.as_view(), name="signup"),
@@ -14,5 +16,6 @@ urlpatterns = [
     path("journal/<int:pk>/", JournalDetailView.as_view(), name="journal_detail"),
     path("journal/modifier/<int:pk>/", JournalUpdateView.as_view(), name="journal_update"),
     path("journal/supprimer/<int:pk>/", JournalDeleteView.as_view(), name="journal_delete"),
-    path("categorie/", CategorieView.as_view(), name="categorie")
+    path("categorie/", CategorieView.as_view(), name="categorie"),
+    path("logs/", ActionLogListView.as_view(), name="logs"),
 ]

@@ -40,13 +40,13 @@
                 </svg>
                 Journal
             </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-blue-200 hover:text-white hover:bg-blue-800/30 rounded-lg text-sm transition-colors">
+            <a href="{% url 'categorie' %}" class="flex items-center gap-3 px-4 py-2.5 text-blue-200 hover:text-white hover:bg-blue-800/30 rounded-lg text-sm transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                 </svg>
                 Catégories
             </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-blue-200 hover:text-white hover:bg-blue-800/30 rounded-lg text-sm transition-colors">
+            <a href="{% url 'logs' %}" class="flex items-center gap-3 px-4 py-2.5 text-blue-200 hover:text-white hover:bg-blue-800/30 rounded-lg text-sm transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
@@ -99,7 +99,7 @@
                 </div>
                 <!-- User -->
                 <div class="flex items-center gap-2 cursor-pointer">
-                    <img src="https://ui-avatars.com/api/?name=John+Doe&background=random" alt="username" class="w-8 h-8 rounded-full">
+                    <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=random" alt="{{ user.username }}" class="w-8 h-8 rounded-full">
                     <span class="text-sm text-gray-700 font-medium">{{ user.username }}</span>
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -207,7 +207,7 @@
                                         {{ activity.get_statut_display }}
                                     </span>
                                     {% if activity.categorie %}
-                                    <span class="text-[9px] px-2 py-0.5 rounded text-white font-medium" style="background-color: {{ activity.categorie.couleur }}">
+                                    <span class="text-[9px] px-2 py-0.5 rounded text-white font-medium" style = "background-color: {{ activity.categorie.couleur }};">
                                         {{ activity.categorie.nom }}
                                     </span>
                                     {% endif %}

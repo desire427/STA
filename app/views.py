@@ -34,8 +34,7 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
-        # On récupère les données globales pour la traçabilité complète
+
         all_entries = Journal.objects.select_related('categorie').all()
         
         # Statistiques basées sur l'état actuel des notes
@@ -59,7 +58,6 @@ class DashboardView(LoginRequiredMixin, generic.TemplateView):
         context['completion_rate'] = round(completion_rate)
         context['categories'] = Categorie.objects.all()
 
-        # Affiche les notes récemment modifiées (y compris créations)
         context['recent_activities'] = all_entries.order_by('-date_modification')[:6]
         return context
 
@@ -124,3 +122,9 @@ class JournalDeleteView(LoginRequiredMixin, UserIsOwnerMixin, generic.DeleteView
     model = Journal
     template_name = "journal_confirm_delete.html"
     success_url = reverse_lazy("journal")
+
+class ActionLogListView(LoginRequiredMixin, generic.ListView):
+    model = ActionLog
+    template_name = "logs.html"
+    context_object_name = "logs"
+    paginate_by = 15
