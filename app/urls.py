@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import SignUpView, UserLoginView, DashboardView
 from django.contrib.auth.views import LogoutView
-from .views import JournalView, JournalCreateView, JournalDetailView
+from .views import JournalView, JournalCreateView, JournalDetailView, JournalUpdateView
 
 urlpatterns = [
     path("signup/", SignUpView.as_view(), name="signup"),
@@ -11,4 +11,5 @@ urlpatterns = [
     path("journal/", JournalView.as_view(), name="journal"),
     path("journal/nouveau/", JournalCreateView.as_view(), name="journal_create"),
     path("journal/<int:pk>/", JournalDetailView.as_view(), name="journal_detail"),
+    path("journal/modifier/<int:pk>/", JournalUpdateView.as_view(), name="journal_update"),
 ]

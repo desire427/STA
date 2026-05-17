@@ -46,3 +46,12 @@ class JournalDetailView(LoginRequiredMixin, generic.DetailView):
     model = Journal
     template_name = "details.html"
     context_object_name = "journal"
+
+class JournalUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Journal
+    fields = ['titre', 'contenu', 'image', 'priorite', 'statut']
+    template_name = "update_ent.html"
+    context_object_name = "journal"
+
+    def get_success_url(self):
+        return reverse_lazy('journal_detail', kwargs={'pk': self.object.pk})
